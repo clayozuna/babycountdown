@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Baby Countdown</title>
+<meta name="description" content="Counting down the days until the little one arrives.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍼</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fbf6f1;
+    --bg-2: #f4e9df;
+    --card: #ffffff;
+    --ink: #3a2f2a;
+    --muted: #8a7a70;
+    --accent: #d9826b;
+    --accent-soft: #f6d9cf;
+    --sage: #9db39a;
+    --line: #eadbd0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1e1a18;
+      --bg-2: #2a2421;
+      --card: #2e2825;
+      --ink: #f3ebe5;
+      --muted: #b3a49a;
+      --accent: #e99a83;
+      --accent-soft: #4a332c;
+      --sage: #a9c2a6;
+      --line: #3d3430;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; }
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+    color: var(--ink);
+    background: radial-gradient(ellipse at top, var(--bg-2), var(--bg) 60%) fixed;
+    background-color: var(--bg);
+    display: flex;
+    justify-content: center;
+    padding: 48px 16px 64px;
+    line-height: 1.5;
+  }
+  main { width: 100%; max-width: 720px; text-align: center; }
+
+  .eyebrow {
+    font-size: 0.8rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  h1 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 600;
+    font-size: clamp(2.2rem, 7vw, 3.6rem);
+    line-height: 1.1;
+    margin: 12px 0 8px;
+  }
+  .sub { color: var(--muted); font-size: 1.05rem; }
+
+  .countdown {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 40px 0 32px;
+  }
+  .unit {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 22px 8px 16px;
+    box-shadow: 0 6px 24px -12px rgba(120, 70, 50, 0.25);
+  }
+  .num {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: clamp(2rem, 9vw, 3.4rem);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .unit:first-child .num { color: var(--accent); }
+  .label {
+    margin-top: 8px;
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 24px;
+    text-align: left;
+    margin-bottom: 16px;
+  }
+  .progress-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .progress-head strong {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+  .progress-head span { color: var(--muted); font-size: 0.9rem; }
+  .bar {
+    height: 14px;
+    background: var(--accent-soft);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .fill {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, var(--sage), var(--accent));
+    border-radius: 999px;
+    transition: width 1s ease;
+  }
+  .trimesters {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  .size {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .size .emoji { font-size: 3rem; line-height: 1; }
+  .size p { color: var(--muted); font-size: 0.9rem; }
+  .size h2 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 600;
+    font-size: 1.3rem;
+  }
+
+  .arrived {
+    display: none;
+    margin: 40px 0 32px;
+    padding: 36px 24px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+  }
+  .arrived h2 {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: clamp(1.8rem, 6vw, 2.6rem);
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .arrived p { color: var(--muted); margin-top: 8px; }
+
+  footer { margin-top: 32px; color: var(--muted); font-size: 0.85rem; }
+
+  @media (max-width: 480px) {
+    .countdown { gap: 8px; }
+    .unit { padding: 16px 4px 12px; border-radius: 16px; }
+    .label { font-size: 0.65rem; letter-spacing: 0.08em; }
+    .card { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">A little one is on the way</div>
+  <h1 id="title">1-8 Children are coming soon!</h1>
+  <p class="sub" id="dueText"></p>
+
+  <section class="countdown" id="countdown" aria-live="polite">
+    <div class="unit"><div class="num" id="d">0</div><div class="label">Days</div></div>
+    <div class="unit"><div class="num" id="h">0</div><div class="label">Hours</div></div>
+    <div class="unit"><div class="num" id="m">0</div><div class="label">Minutes</div></div>
+    <div class="unit"><div class="num" id="s">0</div><div class="label">Seconds</div></div>
+  </section>
+
+  <section class="arrived" id="arrived">
+    <h2>It's the big day! 🎉</h2>
+    <p id="arrivedText">The due date is here — any moment now.</p>
+  </section>
+
+  <section class="card">
+    <div class="progress-head">
+      <strong id="weekText">Week —</strong>
+      <span id="pctText">—</span>
+    </div>
+    <div class="bar"><div class="fill" id="fill"></div></div>
+    <div class="trimesters"><span>1st</span><span>2nd</span><span>3rd</span><span>Due</span></div>
+  </section>
+
+  <section class="card size" id="sizeCard">
+    <div class="emoji" id="sizeEmoji">🍉</div>
+    <div>
+      <p>This week, baby is about the size of a</p>
+      <h2 id="sizeName">—</h2>
+    </div>
+  </section>
+
+  <footer>Made with love 💛</footer>
+</main>
+
+<script>
+  /* ====== EDIT THESE ====== */
+  const MOM_NAME = "Gabbi";          // e.g. "Sarah" → "Sarah's baby is coming!"  Leave "" for a generic title.
+  const DUE_DATE = "2026-10-29";  // YYYY-MM-DD
+  /* ======================== */
+
+  const SIZES = {
+    4:["poppy seed","🌱"],5:["sesame seed","🌱"],6:["lentil","🫘"],7:["blueberry","🫐"],
+    8:["raspberry","🍇"],9:["cherry","🍒"],10:["strawberry","🍓"],11:["fig","🟣"],
+    12:["lime","🍋"],13:["lemon","🍋"],14:["peach","🍑"],15:["apple","🍎"],
+    16:["avocado","🥑"],17:["pear","🍐"],18:["bell pepper","🫑"],19:["mango","🥭"],
+    20:["banana","🍌"],21:["carrot","🥕"],22:["papaya","🥭"],23:["grapefruit","🍊"],
+    24:["ear of corn","🌽"],25:["cauliflower","🥦"],26:["head of lettuce","🥬"],27:["cabbage","🥬"],
+    28:["eggplant","🍆"],29:["butternut squash","🎃"],30:["cucumber","🥒"],31:["coconut","🥥"],
+    32:["pineapple","🍍"],33:["cantaloupe","🍈"],34:["honeydew","🍈"],35:["coconut","🥥"],
+    36:["head of romaine","🥬"],37:["bunch of chard","🥬"],38:["pumpkin","🎃"],39:["mini watermelon","🍉"],
+    40:["watermelon","🍉"],41:["watermelon","🍉"],42:["watermelon","🍉"]
+  };
+
+  const [y, mo, da] = DUE_DATE.split("-").map(Number);
+  const due = new Date(y, mo - 1, da);                      // midnight, viewer's local time
+  const start = new Date(due.getTime() - 280 * 86400000);   // 40 weeks earlier
+
+  if (MOM_NAME) {
+    document.getElementById("title").textContent = `${MOM_NAME}'s baby is coming!`;
+    document.title = `${MOM_NAME}'s Baby Countdown`;
+  }
+  document.getElementById("dueText").textContent =
+    "Due " + due.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+
+  const pad = n => String(n).padStart(2, "0");
+
+  function tick() {
+    const now = new Date();
+    const diff = due - now;
+
+    if (diff <= 0) {
+      document.getElementById("countdown").style.display = "none";
+      document.getElementById("arrived").style.display = "block";
+      const over = Math.floor((now - due) / 86400000);
+      if (over >= 1) {
+        document.getElementById("arrivedText").textContent =
+          `${over} day${over === 1 ? "" : "s"} past the due date — baby's taking their sweet time!`;
+      }
+    } else {
+      document.getElementById("d").textContent = Math.floor(diff / 86400000);
+      document.getElementById("h").textContent = pad(Math.floor(diff / 3600000) % 24);
+      document.getElementById("m").textContent = pad(Math.floor(diff / 60000) % 60);
+      document.getElementById("s").textContent = pad(Math.floor(diff / 1000) % 60);
+    }
+
+    const daysIn = Math.max(0, Math.floor((now - start) / 86400000));
+    const week = Math.floor(daysIn / 7);
+    const day = daysIn % 7;
+    const pct = Math.min(100, (daysIn / 280) * 100);
+
+    document.getElementById("weekText").textContent = `Week ${week}${day ? ` + ${day} day${day === 1 ? "" : "s"}` : ""}`;
+    document.getElementById("pctText").textContent = `${Math.round(pct)}% of the way there`;
+    document.getElementById("fill").style.width = pct + "%";
+
+    const size = SIZES[Math.min(42, Math.max(4, week))];
+    document.getElementById("sizeName").textContent = size[0];
+    document.getElementById("sizeEmoji").textContent = size[1];
+    document.getElementById("sizeCard").style.display = week < 4 ? "none" : "flex";
+  }
+
+  tick();
+  setInterval(tick, 1000);
+</script>
+</body>
+</html>
